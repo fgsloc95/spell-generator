@@ -86,7 +86,8 @@
 
         <div class="row">
             <div style="flex:1"><span class="input-label">Cast (0=Inst)</span><input type="number" id="fCast" step="0.1" value="0"></div>
-            <div style="flex:1"><span class="input-label">CD (seg)</span><input type="number" id="fCooldown" value="2"></div>
+            <div style="flex:1"><span class="input-label">CD (seg)</span><input type="number" id="fCooldown" step="0.1" value="2"></div>
+            <div style="flex:1"><span class="input-label">Range</span><input type="number" id="fRange" value="1"></div>
         </div>
 
         <span class="input-label">Descrição</span>
@@ -99,7 +100,7 @@
         <div class="selector-container" id="tagSelector"></div>
 
         <input type="hidden" id="fSelectedIcon" value="">
-        <button id="mainBtn" onclick="saveSpell()" class="btn-save">SALVAR NO GRIMÓRIO</button>
+        <button id="mainBtn" onclick="saveSpell()" class="btn-save">SALVAR SPELL</button>
     </div>
 
     <div class="icon-selector-box">
@@ -115,40 +116,19 @@
     const repo = 'spell-generator';
     const folder = 'icons';
 
-    // Definição de herança: Classes ascendidas herdam de classes base
     const classInheritance = {
-        'Dark Knight': ['Warrior'],
-        'Bastion':   ['Warrior'],
-        'Paladin':   ['Warrior'],
-        'Spell Blade': ['Warrior'],
-
-        'Necromancer': ['Mage'],
-        'Blood Mage': ['Mage'],
-        'Elementarist': ['Mage'],
-        'Cleric': ['Mage'],
-
-        'Assassin': ['Scout'],
-        'Dead Eye': ['Scout'],
-        'Ballisteer': ['Scout'],
-        'Bard': ['Scout'],
-
-        'Nature': ['Druid'],
-        'ShapeShifter': ['Druid'],
-        'TotemMaster': ['Druid'],
-        'FungalMaster': ['Druid']
+        'Dark Knight': ['Warrior'], 'Bastion': ['Warrior'], 'Paladin': ['Warrior'], 'Spell Blade': ['Warrior'],
+        'Necromancer': ['Mage'], 'Blood Mage': ['Mage'], 'Elementarist': ['Mage'], 'Cleric': ['Mage'],
+        'Assassin': ['Scout'], 'Dead Eye': ['Scout'], 'Ballisteer': ['Scout'], 'Bard': ['Scout'],
+        'Nature': ['Druid'], 'ShapeShifter': ['Druid'], 'TotemMaster': ['Druid'], 'FungalMaster': ['Druid']
     };
 
-    // Listas pré-definidas para os seletores
     const listWeapons = ['Sword', 'Axe', 'Mace', 'Staff 2H', 'Wand 1H', 'Bow', 'Crossbow', 'Knife', 'Spear', 'Shield'];
     const listTags = [
-    // Tipos de Alvo
-    'Melee', 'AoE', 'Single', 'Ranged', 'Chain', 'Wave', 'DoT',
-    // Elementos
-    'Physical', 'Fire', 'Ice', 'Energy', 'Earth', 'Death', 'Holy', 'Poison', 'Curse', 'Weapon Element', 'Random Element',
-    // Efeitos e Status
-    'Buff', 'Stun', 'Slow', 'Snare', 'Freeze', 'Heal', 'Life Regen', 'Max Life', 'Shield', 'Bleed', 'Silence', 'Max Mana', 'Mana Regen', 
-    // Mecânicas Especiais
-    'Passive', 'Effect', 'Cleanse', 'Aura', 'Movement', 'Taunt', 'Summon', 'Knockback', 'Lifesteal', 'Execute', 'Ultimate'
+        'Melee', 'AoE', 'Single', 'Ranged', 'Chain', 'Wave', 'DoT',
+        'Physical', 'Fire', 'Ice', 'Energy', 'Earth', 'Death', 'Holy', 'Poison', 'Curse', 'Weapon Element', 'Random Element',
+        'Buff', 'Stun', 'Slow', 'Snare', 'Freeze', 'Heal', 'Life Regen', 'Max Life', 'Shield', 'Bleed', 'Silence', 'Max Mana', 'Mana Regen', 
+        'Passive', 'Effect', 'Cleanse', 'Aura', 'Movement', 'Taunt', 'Summon', 'Knockback', 'Lifesteal', 'Execute', 'Ultimate'
     ];
 
     let selectedWeapons = [];
@@ -224,6 +204,7 @@
             desc: document.getElementById('fDesc').value,
             cast: document.getElementById('fCast').value,
             cooldown: document.getElementById('fCooldown').value,
+            range: document.getElementById('fRange').value,
             icon: icon,
             tags: selectedTags
         };
@@ -237,7 +218,7 @@
         }
 
         localStorage.setItem('mySpells', JSON.stringify(spells));
-        location.reload(); // Recarrega para limpar tudo e atualizar listas
+        location.reload();
     }
 
     function renderSpells() {
@@ -257,11 +238,8 @@
                 return isDirect || parents.includes(s.classe);
             });
 
-            // LÓGICA DE OVERRIDE:
-            // Se existir uma skill da classe atual que substitui uma skill herdada, removemos a herdada.
             const overrides = classSpells.filter(s => s.classe === displayClass && s.replaces !== "");
             const namesToHide = overrides.map(o => o.replaces);
-            
             classSpells = classSpells.filter(s => !namesToHide.includes(s.name) || s.classe === displayClass);
 
             if(classSpells.length === 0) return;
@@ -284,6 +262,7 @@
                     <div class="c-extra">
                         <span>Cast: <b>${s.cast == 0 ? "Inst" : s.cast+'s'}</b></span>
                         <span>CD: <b>${s.cooldown}s</b></span>
+                        <span>RG: <b>${s.range || 1}</b></span>
                     </div>
                     <div style="display:flex; justify-content:center; gap:10px; margin-top:5px;">
                         <button style="color:#58a6ff; background:none; border:1px solid #333; cursor:pointer; font-size:10px;" onclick="editSpell(${s.id})">EDITAR</button>
@@ -305,6 +284,7 @@
         document.getElementById('fReplaces').value = s.replaces || "";
         document.getElementById('fCast').value = s.cast;
         document.getElementById('fCooldown').value = s.cooldown;
+        document.getElementById('fRange').value = s.range || 1;
         document.getElementById('fDesc').value = s.desc;
         document.getElementById('fStats').value = s.stats;
         document.getElementById('fSelectedIcon').value = s.icon;
