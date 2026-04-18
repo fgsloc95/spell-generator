@@ -87,16 +87,15 @@
         <button onclick="saveSpell()" class="btn-save">SALVAR NO GRIMÓRIO</button>
     </div>
 
+    <div class="icon-selector-box">
+        <h3 style="margin:0 0 15px 0">BIBLIOTECA DE ÍCONES (Auto-Scan)</h3>
+        <div class="icon-grid" id="iconGrid">Carregando ícones do repositório...</div>
+    </div>
 
     <div style="display: flex; gap: 10px; margin-top: 10px;">
         <button onclick="exportSpells()" class="btn-save" style="background: #2ea44f; flex: 1;">EXPORTAR JSON</button>
         <button onclick="document.getElementById('importInput').click()" class="btn-save" style="background: #0969da; flex: 1;">IMPORTAR JSON</button>
         <input type="file" id="importInput" style="display:none" onchange="importSpells(event)">
-    </div>
-
-    <div class="icon-selector-box">
-        <h3 style="margin:0 0 15px 0">BIBLIOTECA DE ÍCONES (Auto-Scan)</h3>
-        <div class="icon-grid" id="iconGrid">Carregando ícones do repositório...</div>
     </div>
 </div>
 
